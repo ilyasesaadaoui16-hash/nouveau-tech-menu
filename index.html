@@ -2,64 +2,157 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveau Tech Menu</title>
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NOUVEAU TECH - القائمة الذكية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- خط تجوال -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <!-- مكتبة قراءة ملفات CSV -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        body { font-family: 'Tajawal', sans-serif; }
-        /* تصميم مخصص للألوان الذهبية */
-        .gold-text { color: #d4af37; }
-        .gold-bg { background-color: #d4af37; }
-        .active-cat { background-color: #d4af37; color: white; }
-        .card { transition: all 0.3s ease; }
-        .card:hover { transform: translateY(-3px); shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        /* إعدادات الخطوط والألوان الأساسية */
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #f7f5f2; /* لون كريمي دافئ مريح للعين */
+            color: #2c2c2c;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* تأثيرات الحركة (Animations) */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes steam {
+            0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+            50% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-20px) scale(1.2); }
+        }
+
+        .animate-card {
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0; /* يبدأ مخفي */
+        }
+
+        .steam-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            opacity: 0;
+            animation: steam 2.5s infinite ease-in-out;
+        }
+
+        /* تنسيق الكروت */
+        .food-card {
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .food-card:active {
+            transform: scale(0.97); /* إحساس بالضغط الحقيقي */
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(212, 175, 55, 0.15); /* توهج ذهبي خفيف */
+        }
+
+        .food-image-container {
+            position: relative;
+            overflow: hidden;
+            height: 160px;
+        }
+
+        .food-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .food-card:hover .food-image {
+            transform: scale(1.1); /* تكبير الصورة عند التمرير */
+        }
+
+        /* شريط التصنيفات */
+        .category-pill {
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .category-pill.active {
+            background: #d4af37; /* ذهبي */
+            color: white;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* الهيدر */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 pb-20">
+<body>
 
     <!-- Header -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-md mx-auto p-4 flex flex-col items-center">
-            <img src="logo.png" alt="Logo" class="w-24 h-24 mb-2 object-contain">
-            <h1 class="text-2xl font-bold text-gray-900">NOUVEAU TECH</h1>
-            <p class="text-gray-500 text-xs">مقهى عصري - وجدة</p>
+    <header class="glass-header sticky top-0 z-50 pt-4 pb-2 px-4">
+        <div class="max-w-md mx-auto flex flex-col items-center relative">
+            <!-- اللوغو مع تأثير توهج -->
+            <div class="relative mb-2">
+                <div class="absolute inset-0 bg-yellow-400 blur-xl opacity-20 rounded-full"></div>
+                <img src="logo.png" alt="Nouveau Tech" class="w-20 h-20 relative z-10 object-contain drop-shadow-md">
+            </div>
             
-            <!-- Categories (ستملأ تلقائياً) -->
-            <div id="categories" class="flex overflow-x-auto gap-2 mt-4 pb-2 w-full scrollbar-hide">
-                <button class="active-cat px-4 py-1 rounded-full text-sm whitespace-nowrap bg-gray-100">جاري التحميل...</button>
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">NOUVEAU TECH</h1>
+            <p class="text-xs text-gray-500 font-medium mb-4">أهلاً بك.. استمتع بالطعم</p>
+
+            <!-- Categories -->
+            <div class="flex overflow-x-auto gap-3 pb-3 w-full scrollbar-hide snap-x">
+                <div id="categories-container" class="flex gap-3">
+                    <!-- ستملأ تلقائياً -->
+                    <div class="w-24 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Menu Area -->
-    <main class="max-w-md mx-auto p-4">
-        <div id="menu-items" class="grid gap-4">
-            <!-- سيتم وضع العناصر هنا بواسطة الجافاسكربت -->
+    <!-- Main Content -->
+    <main class="max-w-md mx-auto px-4 py-6 pb-24">
+        <div id="menu-grid" class="grid grid-cols-2 gap-4">
+            <!-- سيتم بناء الكروت هنا -->
+            <div class="col-span-2 text-center py-10 text-gray-400 text-sm">جاري تحضير القائمة...</div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="fixed bottom-0 w-full bg-gray-900 text-white text-center p-3 text-xs">
-        <p>Powered by Nouveau Tech</p>
+    <footer class="fixed bottom-0 w-full bg-white border-t border-gray-100 py-3 text-center z-40">
+        <p class="text-[10px] text-gray-400">صنع بـ ❤️ بواسطة Nouveau Tech</p>
     </footer>
 
     <script>
-        //  ضع رابط CSV الذي نسخته من جوجل شيت هنا 👇
+        // رابط شيت جوجل (CSV)
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWHuGH6ncA4zp6A43RdxyxM3yibzV65Lpq4hdgc6NhVv4yjZfRpNfUFJMRbr6cP56Ds7oD9lye1B3/pub?output=tsv';
-
-        let allData = [];
+        
+        let allItems = [];
 
         function init() {
             Papa.parse(SHEET_URL, {
                 download: true,
                 header: true,
                 complete: function(results) {
-                    allData = results.data.filter(item => item.name); // تصفية الصفوف الفارغة
+                    allItems = results.data.filter(i => i.name && i.name.length > 1);
                     renderCategories();
                     renderMenu('all');
                 }
@@ -67,37 +160,63 @@
         }
 
         function renderCategories() {
-            const cats = ['all', ...new Set(allData.map(d => d.category))];
-            const container = document.getElementById('categories');
-            container.innerHTML = cats.map(c => `
-                <button onclick="renderMenu('${c}')" class="cat-btn px-4 py-1 rounded-full text-sm whitespace-nowrap bg-gray-100 hover:bg-gray-200 transition ${c==='all'?'active-cat':''}">
-                    ${c === 'all' ? 'الكل' : c}
+            const categories = ['all', ...new Set(allItems.map(i => i.category))];
+            const container = document.getElementById('categories-container');
+            
+            container.innerHTML = categories.map((cat, index) => `
+                <button onclick="renderMenu('${cat}')" 
+                    class="category-pill active px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 shadow-sm cursor-pointer">
+                    ${cat === 'all' ? '🔥 الكل' : cat}
                 </button>
             `).join('');
         }
 
-        function renderMenu(cat) {
-            // تحديث شكل الأزرار
-            document.querySelectorAll('.cat-btn').forEach(b => {
-                b.classList.remove('active-cat');
-                if(b.textContent.includes(cat === 'all' ? 'الكل' : cat)) b.classList.add('active-cat');
+        function renderMenu(filterCat) {
+            // تحديث ستايل الأزرار
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(filterCat === 'all' ? 'الكل' : filterCat)) {
+                    btn.classList.add('active');
+                }
             });
 
-            const container = document.getElementById('menu-items');
-            const items = cat === 'all' ? allData : allData.filter(d => d.category === cat);
+            const container = document.getElementById('menu-grid');
+            const items = filterCat === 'all' ? allItems : allItems.filter(i => i.category === filterCat);
 
-            container.innerHTML = items.map(item => `
-                <div class="card bg-white p-3 rounded-xl shadow-sm flex gap-3 items-center border border-gray-100">
-                    <img src="${item.image || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-lg object-cover bg-gray-100 flex-shrink-0">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h3 class="font-bold text-lg">${item.name}</h3>
-                            <span class="font-bold gold-text text-lg">${item.price}</span>
+            // مسح المحتوى الحالي
+            container.innerHTML = '';
+
+            // بناء الكروت مع تأخير زمني للحركة (Staggered Animation)
+            items.forEach((item, index) => {
+                const delay = index * 0.1; // تأخير 0.1 ثانية بين كل عنصر
+                const cardHTML = `
+                    <div class="food-card animate-card flex flex-col h-full" style="animation-delay: ${delay}s">
+                        <div class="food-image-container relative">
+                            <!-- أيقونة البخار للوجبات الساخنة -->
+                            ${item.category.includes('قهوة') ? '<div class="steam-icon">♨️</div>' : ''}
+                            <img src="${item.image || 'placeholder.jpg'}" class="food-image" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Nouveau+Tech'">
+                            
+                            <!-- شارة السعر -->
+                            <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg shadow-sm">
+                                <span class="text-yellow-600 font-bold text-sm">${item.price}</span>
+                            </div>
                         </div>
-                        <p class="text-gray-500 text-xs mt-1">${item.desc || ''}</p>
+                        
+                        <div class="p-3 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm mb-1 leading-tight">${item.name}</h3>
+                                <p class="text-[10px] text-gray-500 line-clamp-2 leading-relaxed">${item.desc || ''}</p>
+                            </div>
+                            ${item.extra && item.extra !== '-' ? `
+                                <div class="mt-2 pt-2 border-t border-gray-100 text-[9px] text-orange-500 font-medium">
+                                    ✨ ${item.extra}
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+                container.innerHTML += cardHTML;
+            });
         }
 
         window.onload = init;
