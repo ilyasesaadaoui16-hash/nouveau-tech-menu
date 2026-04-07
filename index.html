@@ -2,221 +2,227 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NOUVEAU TECH - القائمة الذكية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOUVEAU TECH | القائمة الذكية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        /* إعدادات الخطوط والألوان الأساسية */
         body { 
             font-family: 'Tajawal', sans-serif; 
-            background-color: #f7f5f2; /* لون كريمي دافئ مريح للعين */
-            color: #2c2c2c;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* تأثيرات الحركة (Animations) */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            background-color: #fdfbf7; /* لون كريمي فاخر */
+            overflow-x: hidden;
         }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
+        /* 1. شاشة الترحيب (Splash Screen) */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out;
+        }
+        .splash-logo {
+            animation: pulseZoom 2s infinite;
+        }
+        .splash-text {
+            color: #d4af37;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+            letter-spacing: 2px;
+            animation: slideUp 1s ease-out;
         }
 
-        @keyframes steam {
-            0% { opacity: 0; transform: translateY(10px) scale(0.8); }
-            50% { opacity: 0.6; }
-            100% { opacity: 0; transform: translateY(-20px) scale(1.2); }
+        /* 2. الخلفية المتحركة (Floating Elements) */
+        .floating-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.4;
         }
-
-        .animate-card {
-            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0; /* يبدأ مخفي */
-        }
-
-        .steam-icon {
+        .float-item {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 20px;
-            opacity: 0;
-            animation: steam 2.5s infinite ease-in-out;
+            font-size: 2rem;
+            animation: floatUp 10s linear infinite;
         }
 
-        /* تنسيق الكروت */
-        .food-card {
-            background: #ffffff;
+        /* 3. كروت المنيو السحرية */
+        .magic-card {
+            background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.02);
-        }
-
-        .food-card:active {
-            transform: scale(0.97); /* إحساس بالضغط الحقيقي */
-        }
-
-        .food-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(212, 175, 55, 0.15); /* توهج ذهبي خفيف */
-        }
-
-        .food-image-container {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
-            overflow: hidden;
-            height: 160px;
         }
-
-        .food-image {
+        .magic-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 30px rgba(212, 175, 55, 0.2);
+        }
+        .magic-card img {
             width: 100%;
-            height: 100%;
+            height: 140px;
             object-fit: cover;
-            transition: transform 0.5s ease;
         }
-
-        .food-card:hover .food-image {
-            transform: scale(1.1); /* تكبير الصورة عند التمرير */
-        }
-
-        /* شريط التصنيفات */
-        .category-pill {
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        .category-pill.active {
-            background: #d4af37; /* ذهبي */
+        .gold-btn {
+            background: linear-gradient(45deg, #d4af37, #b8962e);
             color: white;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-            transform: scale(1.05);
+            border: none;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
         }
 
-        /* الهيدر */
-        .glass-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+        /* Animations Keyframes */
+        @keyframes pulseZoom {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 20px #d4af37; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes fadeInItem {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="glass-header sticky top-0 z-50 pt-4 pb-2 px-4">
-        <div class="max-w-md mx-auto flex flex-col items-center relative">
-            <!-- اللوغو مع تأثير توهج -->
-            <div class="relative mb-2">
-                <div class="absolute inset-0 bg-yellow-400 blur-xl opacity-20 rounded-full"></div>
-                <img src="logo.png" alt="Nouveau Tech" class="w-20 h-20 relative z-10 object-contain drop-shadow-md">
-            </div>
-            
-            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">NOUVEAU TECH</h1>
-            <p class="text-xs text-gray-500 font-medium mb-4">أهلاً بك.. استمتع بالطعم</p>
+    <!-- 1. شاشة الترحيب (تظهر أولاً) -->
+    <div id="splash-screen">
+        <img src="logo.png" class="w-32 h-32 mb-4 splash-logo object-contain" alt="Logo">
+        <div class="splash-text">NOUVEAU TECH</div>
+        <div class="text-gray-400 mt-2 text-sm animate-pulse">جارِ تحضير مذاقك...</div>
+    </div>
 
-            <!-- Categories -->
-            <div class="flex overflow-x-auto gap-3 pb-3 w-full scrollbar-hide snap-x">
-                <div id="categories-container" class="flex gap-3">
-                    <!-- ستملأ تلقائياً -->
-                    <div class="w-24 h-10 bg-gray-200 rounded-full animate-pulse"></div>
-                </div>
+    <!-- 2. الخلفية المتحركة -->
+    <div class="floating-bg" id="floating-bg">
+        <!-- سيتم ملؤها بواسطة JS -->
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-yellow-100 shadow-sm">
+        <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <img src="logo.png" class="w-10 h-10 object-contain" alt="Logo">
+                <h1 class="font-black text-xl text-gray-800">NOUVEAU TECH</h1>
             </div>
+            <div class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                ✨ <span id="typing-text">أجواء تقنية</span>
+            </div>
+        </div>
+        
+        <!-- Categories -->
+        <div class="flex overflow-x-auto gap-3 px-4 pb-3 no-scrollbar" id="categories">
+            <button class="gold-btn px-5 py-2 rounded-xl text-sm font-bold whitespace-nowrap">🔥 الكل</button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-md mx-auto px-4 py-6 pb-24">
+    <!-- Main Menu -->
+    <main class="max-w-md mx-auto p-4 pb-24">
         <div id="menu-grid" class="grid grid-cols-2 gap-4">
-            <!-- سيتم بناء الكروت هنا -->
-            <div class="col-span-2 text-center py-10 text-gray-400 text-sm">جاري تحضير القائمة...</div>
+            <!-- العناصر -->
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="fixed bottom-0 w-full bg-white border-t border-gray-100 py-3 text-center z-40">
-        <p class="text-[10px] text-gray-400">صنع بـ ❤️ بواسطة Nouveau Tech</p>
+    <footer class="fixed bottom-0 w-full bg-white border-t border-gray-100 py-2 text-center z-40 text-xs text-gray-400">
+        Made with ❤️ by Nouveau Tech
     </footer>
 
     <script>
-        // رابط شيت جوجل (CSV)
+        // 1. إخفاء شاشة الترحيب بعد 3 ثوانٍ
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 800);
+        }, 3000);
+
+        // 2. إنشاء الخلفية المتحركة
+        const emojis = ['☕', '🥐', '🍰', '🥤', '', '✨'];
+        const container = document.getElementById('floating-bg');
+        for(let i=0; i<15; i++) {
+            const el = document.createElement('div');
+            el.classList.add('float-item');
+            el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            el.style.left = Math.random() * 100 + '%';
+            el.style.animationDuration = (Math.random() * 5 + 8) + 's';
+            el.style.animationDelay = (Math.random() * 5) + 's';
+            el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            container.appendChild(el);
+        }
+
+        // 3. تأثير الكتابة المتغير في الهيدر
+        const texts = ["أشهى القهوة ☕", "ألذ الفطور 🥐", "تجربة عصرية ✨", "NOUVEAU TECH 🚀"];
+        let textIndex = 0;
+        setInterval(() => {
+            const el = document.getElementById('typing-text');
+            el.style.opacity = 0;
+            setTimeout(() => {
+                textIndex = (textIndex + 1) % texts.length;
+                el.innerText = texts[textIndex];
+                el.style.opacity = 1;
+            }, 300);
+        }, 3000);
+
+        // 4. تحميل البيانات من Google Sheets
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWHuGH6ncA4zp6A43RdxyxM3yibzV65Lpq4hdgc6NhVv4yjZfRpNfUFJMRbr6cP56Ds7oD9lye1B3/pub?output=tsv';
         
-        let allItems = [];
-
         function init() {
             Papa.parse(SHEET_URL, {
                 download: true,
                 header: true,
                 complete: function(results) {
-                    allItems = results.data.filter(i => i.name && i.name.length > 1);
-                    renderCategories();
-                    renderMenu('all');
+                    const items = results.data.filter(i => i.name);
+                    renderMenu(items, 'all');
+                    renderCategories(items);
                 }
             });
         }
 
-        function renderCategories() {
-            const categories = ['all', ...new Set(allItems.map(i => i.category))];
-            const container = document.getElementById('categories-container');
+        function renderCategories(items) {
+            const cats = [...new Set(items.map(i => i.category))];
+            const cont = document.getElementById('categories');
+            cont.innerHTML = `<button onclick="renderMenu(allItems, 'all')" class="gold-btn px-5 py-2 rounded-xl text-sm font-bold whitespace-nowrap">🔥 الكل</button>` +
+                cats.map(c => `<button onclick="renderMenu(allItems, '${c}')" class="bg-white border border-gray-200 px-5 py-2 rounded-xl text-sm font-bold whitespace-nowrap text-gray-600 hover:bg-yellow-50">${c}</button>`).join('');
+        }
+
+        let allItems = [];
+
+        function renderMenu(items, cat) {
+            allItems = items;
+            const filtered = cat === 'all' ? items : items.filter(i => i.category === cat);
+            const grid = document.getElementById('menu-grid');
             
-            container.innerHTML = categories.map((cat, index) => `
-                <button onclick="renderMenu('${cat}')" 
-                    class="category-pill active px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 shadow-sm cursor-pointer">
-                    ${cat === 'all' ? '🔥 الكل' : cat}
-                </button>
-            `).join('');
-        }
-
-        function renderMenu(filterCat) {
-            // تحديث ستايل الأزرار
-            document.querySelectorAll('.category-pill').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.includes(filterCat === 'all' ? 'الكل' : filterCat)) {
-                    btn.classList.add('active');
-                }
-            });
-
-            const container = document.getElementById('menu-grid');
-            const items = filterCat === 'all' ? allItems : allItems.filter(i => i.category === filterCat);
-
-            // مسح المحتوى الحالي
-            container.innerHTML = '';
-
-            // بناء الكروت مع تأخير زمني للحركة (Staggered Animation)
-            items.forEach((item, index) => {
-                const delay = index * 0.1; // تأخير 0.1 ثانية بين كل عنصر
-                const cardHTML = `
-                    <div class="food-card animate-card flex flex-col h-full" style="animation-delay: ${delay}s">
-                        <div class="food-image-container relative">
-                            <!-- أيقونة البخار للوجبات الساخنة -->
-                            ${item.category.includes('قهوة') ? '<div class="steam-icon">♨️</div>' : ''}
-                            <img src="${item.image || 'placeholder.jpg'}" class="food-image" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Nouveau+Tech'">
-                            
-                            <!-- شارة السعر -->
-                            <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg shadow-sm">
-                                <span class="text-yellow-600 font-bold text-sm">${item.price}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="p-3 flex flex-col flex-1 justify-between">
-                            <div>
-                                <h3 class="font-bold text-gray-800 text-sm mb-1 leading-tight">${item.name}</h3>
-                                <p class="text-[10px] text-gray-500 line-clamp-2 leading-relaxed">${item.desc || ''}</p>
-                            </div>
-                            ${item.extra && item.extra !== '-' ? `
-                                <div class="mt-2 pt-2 border-t border-gray-100 text-[9px] text-orange-500 font-medium">
-                                    ✨ ${item.extra}
-                                </div>
-                            ` : ''}
+            // تأثير الظهور المتتابع
+            grid.innerHTML = filtered.map((item, index) => `
+                <div class="magic-card" style="animation: fadeInItem 0.5s ease-out ${index * 0.1}s backwards;">
+                    <div class="relative">
+                        <img src="${item.image || 'https://via.placeholder.com/200?text=Food'}" alt="${item.name}">
+                        ${item.category.includes('قهوة') ? '<div class="absolute top-2 left-2 text-lg animate-bounce">☕</div>' : ''}
+                        <div class="absolute bottom-2 right-2 bg-white/90 px-2 py-1 rounded-lg text-xs font-bold text-yellow-700 shadow-sm">
+                            ${item.price}
                         </div>
                     </div>
-                `;
-                container.innerHTML += cardHTML;
-            });
+                    <div class="p-3">
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">${item.name}</h3>
+                        <p class="text-[10px] text-gray-500 line-clamp-2">${item.desc || ''}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
         window.onload = init;
