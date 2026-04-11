@@ -2,258 +2,310 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NOUVEAU TECH | القائمة التفاعلية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOUVEAU TECH | القائمة الذكية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: #fff; overflow-x: hidden; }
+        /* الأساسيات */
+        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: #fff; overflow-x: hidden; padding-bottom: 80px; }
         
-        /* 1. الخلفية التفاعلية */
-        .interactive-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
-            overflow: hidden;
-        }
-        .bg-orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
-            animation: orbFloat 20s infinite ease-in-out alternate;
-        }
-        .orb-1 { width: 400px; height: 400px; background: #d4af37; top: -10%; left: -10%; }
-        .orb-2 { width: 300px; height: 300px; background: #3b82f6; bottom: -10%; right: -10%; animation-delay: -5s; }
-        .orb-3 { width: 250px; height: 250px; background: #ec4899; top: 40%; left: 60%; animation-delay: -10s; }
-        @keyframes orbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 40px) scale(1.1); } }
+        /* الخلفية المتحركة */
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.3; z-index: -1; animation: float 10s infinite alternate; }
+        .orb-1 { width: 300px; height: 300px; background: #d4af37; top: -50px; left: -50px; }
+        .orb-2 { width: 250px; height: 250px; background: #3b82f6; bottom: -50px; right: -50px; animation-delay: -3s; }
+        @keyframes float { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 40px); } }
 
-        /* 2. شاشة الترحيب والملصقات */
-        #splash { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s, visibility 0.6s; }
-        .splash-hide { opacity: 0; visibility: hidden; pointer-events: none; }
-        .welcome-toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: linear-gradient(90deg, #d4af37, #b8962e); color: #fff; padding: 10px 20px; border-radius: 50px;
-            font-weight: bold; box-shadow: 0 10px 25px rgba(212,175,55,0.4); z-index: 100; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .toast-show { transform: translateX(-50%) translateY(0); }
+        /* شاشة الترحيب */
+        #splash { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s; }
+        .splash-hide { opacity: 0; pointer-events: none; }
         
-        .badge {
-            position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: bold; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            animation: badgePop 0.5s ease-out;
-        }
-        .badge-new { background: #10b981; } .badge-hot { background: #ef4444; } .badge-offer { background: #8b5cf6; }
-        @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
+        /* كروت المنيو */
+        .menu-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden; transition: 0.3s; position: relative; }
+        .menu-card:active { transform: scale(0.97); }
+        .badge { position: absolute; top: 10px; right: 10px; background: #d4af37; color: #000; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; z-index: 10; }
 
-        /* 3. كروت المنيو */
-        .menu-card {
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; cursor: pointer;
-        }
-        .menu-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.08); border-color: #d4af37; box-shadow: 0 20px 40px rgba(212,175,55,0.15); }
-        .menu-card img { width: 100%; height: 160px; object-fit: cover; transition: transform 0.5s; }
-        .menu-card:hover img { transform: scale(1.05); }
+        /* السلة العائمة */
+        .cart-fab { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #d4af37; color: #000; padding: 12px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(212,175,55,0.4); z-index: 100; display: flex; align-items: center; gap: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .cart-fab:hover { transform: translateX(-50%) scale(1.05); }
+        .badge-count { background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
 
-        /* 4. عارض الصور (Lightbox) */
-        #lightbox {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none;
-            justify-content: center; align-items: center; flex-direction: column; opacity: 0; transition: opacity 0.3s;
-        }
-        #lightbox.active { display: flex; opacity: 1; }
-        .lb-img-container { position: relative; max-width: 90vw; max-height: 75vh; overflow: hidden; border-radius: 16px; cursor: grab; }
-        .lb-img-container:active { cursor: grabbing; }
-        .lb-img { max-width: 100%; max-height: 70vh; object-fit: contain; transition: transform 0.2s ease-out; transform-origin: center; }
-        .lb-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 50px; backdrop-filter: blur(10px); }
-        .lb-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .lb-btn:hover { background: #d4af37; }
-        .lb-close { position: absolute; top: 20px; right: 20px; font-size: 2rem; cursor: pointer; color: white; opacity: 0.7; transition: 0.2s; }
-        .lb-close:hover { opacity: 1; transform: rotate(90deg); }
-        .zoom-hint { color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 10px; }
+        /* Modal (السلة والتحقق) */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; }
+        .modal-content { background: #1e293b; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* Lightbox للصورة */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 300; display: none; justify-content: center; align-items: center; }
+        #lightbox.active { display: flex; }
+        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- الخلفية التفاعلية -->
-    <div class="interactive-bg">
-        <div class="bg-orb orb-1"></div>
-        <div class="bg-orb orb-2"></div>
-        <div class="bg-orb orb-3"></div>
-        <canvas id="particles" class="absolute inset-0 w-full h-full"></canvas>
-    </div>
+    <!-- الخلفية -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
 
     <!-- شاشة الترحيب -->
     <div id="splash">
-        <img src="logo.png" class="w-28 h-28 mb-4 animate-bounce object-contain" alt="Logo">
-        <h1 class="text-3xl font-black text-yellow-500 tracking-wider mb-2">NOUVEAU TECH</h1>
-        <div class="flex gap-2 text-gray-400 text-sm">
-            <span>☕</span><span>🥐</span><span>✨</span><span>🚀</span>
-        </div>
+        <img src="logo.png" class="w-24 h-24 mb-4 animate-bounce object-contain">
+        <h1 class="text-2xl font-bold text-yellow-500">NOUVEAU TECH</h1>
+        <p class="text-gray-400 text-sm mt-2">جارِ تحضير القائمة...</p>
     </div>
 
-    <!-- إشعار الترحيب -->
-    <div id="toast" class="welcome-toast">🎉 أهلاً بك! استمتع بتجربة ذواقة فريدة</div>
-
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/5 backdrop-blur-xl border-b border-white/10">
-        <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="logo.png" class="w-10 h-10 object-contain" alt="Logo">
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">NOUVEAU TECH</h1>
-                    <p class="text-[10px] text-yellow-500">مقهى عصري | وجدة</p>
-                </div>
+    <!-- الهيدر -->
+    <header class="sticky top-0 z-50 bg-white/5 backdrop-blur-lg border-b border-white/10 px-4 py-3">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <img src="logo.png" class="w-8 h-8 object-contain">
+                <h1 class="font-bold text-lg">NOUVEAU TECH</h1>
             </div>
-            <div class="bg-yellow-500/20 text-yellow-400 text-xs px-3 py-1 rounded-full border border-yellow-500/30">
-                <span id="typing-text">أجواء تقنية...</span>
+            <div class="bg-white/10 px-3 py-1 rounded-full text-xs text-yellow-500 border border-yellow-500/30">
+                📍 طاولة: <span id="table-display">...</span>
             </div>
         </div>
-        <div class="flex overflow-x-auto gap-3 px-4 pb-3 no-scrollbar" id="categories">
-            <button class="bg-yellow-500 text-black px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-lg shadow-yellow-500/20">🔥 الكل</button>
+        <!-- التصنيفات -->
+        <div class="flex overflow-x-auto gap-3 mt-3 pb-1 no-scrollbar" id="categories">
+            <button onclick="filterCat('all')" class="bg-yellow-500 text-black px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap">الكل</button>
         </div>
     </header>
 
-    <!-- Main -->
-    <main class="max-w-md mx-auto p-4 pb-24">
-        <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div class="col-span-full text-center py-20 text-gray-500">جاري تحضير القائمة...</div>
+    <!-- القائمة -->
+    <main class="max-w-md mx-auto p-4">
+        <div id="menu-grid" class="grid grid-cols-2 gap-4">
+            <!-- العناصر -->
         </div>
     </main>
 
-    <!-- Lightbox Modal -->
+    <!-- زر السلة -->
+    <div class="cart-fab" onclick="openCart()">
+        🛒 <span id="cart-count" class="badge-count">0</span> <span id="cart-total">0 DH</span>
+    </div>
+
+    <!-- نافذة السلة -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-yellow-500">🛒 سلة الطلبات</h2>
+                <button onclick="closeCart()" class="text-gray-400 text-2xl">&times;</button>
+            </div>
+            <div id="cart-items" class="space-y-3 mb-4">
+                <!-- عناصر السلة -->
+            </div>
+            <div class="border-t border-gray-700 pt-4">
+                <div class="flex justify-between text-lg font-bold mb-4">
+                    <span>المجموع:</span>
+                    <span class="text-yellow-500" id="modal-total">0 DH</span>
+                </div>
+                
+                <!-- حماية وخصوصية -->
+                <div class="bg-gray-800 p-3 rounded-lg mb-4 text-xs text-gray-400 space-y-2">
+                    <label class="flex justify-between items-center">
+                        <span>🔒 رقم الطاولة</span>
+                        <input id="table-input" type="number" class="bg-gray-700 text-white w-16 text-center rounded px-2 py-1" placeholder="؟">
+                    </label>
+                    <label class="flex justify-between items-center">
+                        <span>🤖 تحقق: كم ناتج <span id="math-q" class="text-yellow-500">2+3</span>؟</span>
+                        <input id="math-a" type="number" class="bg-gray-700 text-white w-16 text-center rounded px-2 py-1" placeholder="؟">
+                    </label>
+                </div>
+
+                <button onclick="submitOrder()" id="send-btn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition">
+                    ✅ إرسال الطلب الآن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
     <div id="lightbox">
-        <div class="lb-close" onclick="closeLightbox()">✕</div>
-        <div class="lb-img-container" id="lb-container">
-            <img id="lb-img" class="lb-img" src="" alt="">
-        </div>
-        <div class="lb-controls">
-            <button class="lb-btn" onclick="zoomImage(0.2)">+</button>
-            <button class="lb-btn" onclick="zoomImage(-0.2)">−</button>
-            <button class="lb-btn" onclick="resetZoom()">↺</button>
-        </div>
-        <p class="zoom-hint mt-2">مرر للإغلاق • عجلة الماوس للتكبير • اسحب للتحريك</p>
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <img id="lb-img" src="" class="max-w-[90%] max-h-[80vh] object-contain">
     </div>
 
     <script>
-        // 1. إخفاء Splash وإظهار Toast
-        setTimeout(() => {
-            document.getElementById('splash').classList.add('splash-hide');
-            setTimeout(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('toast-show');
-                setTimeout(() => toast.classList.remove('toast-show'), 3500);
-            }, 300);
-        }, 2500);
-
-        // 2. جزيئات الخلفية التفاعلية
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
-        
-        class Particle {
-            constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 2; this.speedX = (Math.random() - 0.5) * 0.5; this.speedY = (Math.random() - 0.5) * 0.5; }
-            update() { this.x += this.speedX; this.y += this.speedY; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; }
-            draw() { ctx.fillStyle = 'rgba(212, 175, 55, 0.5)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
-        }
-        for(let i=0; i<50; i++) particles.push(new Particle());
-        function animateParticles() { ctx.clearRect(0,0,width,height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles); }
-        animateParticles();
-
-        // 3. تأثير الكتابة المتغير
-        const phrases = ["☕ قهوة مختصة", "🥐 فطور فاخر", "✨ أجواء تقنية", "🚀 تجربة عصرية"];
-        let pIdx = 0;
-        setInterval(() => {
-            const el = document.getElementById('typing-text');
-            el.style.opacity = 0;
-            setTimeout(() => { pIdx = (pIdx + 1) % phrases.length; el.innerText = phrases[pIdx]; el.style.opacity = 1; }, 300);
-        }, 3000);
-
-        // 4. تحميل البيانات والعرض
+        // === إعدادات هامة ===
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWHuGH6ncA4zp6A43RdxyxM3yibzV65Lpq4hdgc6NhVv4yjZfRpNfUFJMRbr6cP56Ds7oD9lye1B3/pub?output=tsv'; 
-        let allItems = [];
-        const badges = ['badge-new', 'badge-hot', 'badge-offer'];
-        const badgeTexts = ['✨ جديد', '🔥 الأكثر طلباً', '💎 عرض خاص'];
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIslQEZ7sCeKobQlZX1cRL0qOXsjCr9VPBO1QHIdNb5gJ8MnARpP_cmZiwGVF82Lo-BQ/exec';
 
+        // === متغيرات النظام ===
+        let cart = [];
+        let allItems = [];
+        let mathAns = 0;
+        
+        // قراءة رقم الطاولة من الرابط (?table=5)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tableNum = urlParams.get('table');
+        document.getElementById('table-display').innerText = tableNum || 'غير محدد';
+        if(tableNum) document.getElementById('table-input').value = tableNum;
+
+        // === 1. إخفاء شاشة الترحيب ===
+        setTimeout(() => document.getElementById('splash').classList.add('splash-hide'), 2000);
+
+        // === 2. تحميل البيانات ===
         function init() {
-            Papa.parse(SHEET_URL, { download: true, header: true, complete: r => {
-                allItems = r.data.filter(i => i.name);
-                renderCats();
-                renderMenu('all');
-            }});
+            Papa.parse(SHEET_URL, {
+                download: true, header: true,
+                complete: function(results) {
+                    allItems = results.data.filter(i => i.name);
+                    renderMenu('all');
+                    renderCategories();
+                    generateMath();
+                }
+            });
         }
 
-        function renderCats() {
+        function renderCategories() {
             const cats = [...new Set(allItems.map(i => i.category))];
             const cont = document.getElementById('categories');
-            cont.innerHTML = `<button onclick="renderMenu('all')" class="bg-yellow-500 text-black px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-lg">🔥 الكل</button>` +
-                cats.map(c => `<button onclick="renderMenu('${c}')" class="bg-white/10 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-white/20 transition">${c}</button>`).join('');
+            cont.innerHTML = `<button onclick="filterCat('all')" class="bg-yellow-500 text-black px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap">الكل</button>` +
+                cats.map(c => `<button onclick="filterCat('${c}')" class="bg-white/10 text-white px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap hover:bg-white/20">${c}</button>`).join('');
+        }
+
+        function filterCat(cat) {
+            renderMenu(cat);
+            document.querySelectorAll('#categories button').forEach(b => {
+                b.classList.remove('bg-yellow-500', 'text-black');
+                b.classList.add('bg-white/10', 'text-white');
+            });
+            event.target.classList.remove('bg-white/10', 'text-white');
+            event.target.classList.add('bg-yellow-500', 'text-black');
         }
 
         function renderMenu(cat) {
-            const filtered = cat === 'all' ? allItems : allItems.filter(i => i.category === cat);
+            const items = cat === 'all' ? allItems : allItems.filter(i => i.category === cat);
             const grid = document.getElementById('menu-grid');
-            grid.innerHTML = filtered.map((item, i) => {
-                const badgeClass = (i % 3 === 0) ? badges[0] : (i % 3 === 1) ? badges[1] : badges[2];
-                const badgeTxt = (i % 3 === 0) ? badgeTexts[0] : (i % 3 === 1) ? badgeTexts[1] : badgeTexts[2];
-                const showBadge = item.category.includes('قهوة') || item.category.includes('فطور');
-                
-                return `
-                <div class="menu-card animate-[fadeInUp_0.6s_ease-out_${i*0.1}s_both]" onclick="openLightbox('${item.image || 'https://via.placeholder.com/400'}')">
+            grid.innerHTML = items.map((item, i) => `
+                <div class="menu-card" onclick="openLightbox('${item.image || 'https://via.placeholder.com/300'}')">
                     <div class="relative">
-                        <img src="${item.image || 'https://via.placeholder.com/400?text=NOUVEAU+TECH'}" alt="${item.name}">
-                        ${showBadge ? `<span class="badge ${badgeClass}">${badgeTxt}</span>` : ''}
-                        <div class="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg text-yellow-400 font-bold text-sm border border-yellow-500/30">
-                            ${item.price}
+                        <img src="${item.image || 'https://via.placeholder.com/300'}" class="w-full h-32 object-cover">
+                        <span class="badge">🔥 ${i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع')}</span>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-sm mb-1">${item.name}</h3>
+                        <p class="text-[10px] text-gray-400 line-clamp-2">${item.desc || ''}</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-yellow-500 font-bold text-sm">${item.price}</span>
+                            <button onclick="event.stopPropagation(); addToCart('${item.name}', '${item.price}')" class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400">+</button>
                         </div>
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg mb-1">${item.name}</h3>
-                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">${item.desc || ''}</p>
-                        ${item.extra && item.extra !== '-' ? `<p class="text-[10px] text-yellow-500 mt-2 font-medium">⚡ ${item.extra}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // === 3. منطق السلة ===
+        function addToCart(name, price) {
+            const p = parseInt(price);
+            const existing = cart.find(i => i.name === name);
+            if(existing) existing.qty++;
+            else cart.push({ name, price: p, qty: 1 });
+            updateCartUI();
+            
+            // تأثير بصري بسيط
+            const fab = document.querySelector('.cart-fab');
+            fab.style.transform = "translateX(-50%) scale(1.2)";
+            setTimeout(() => fab.style.transform = "translateX(-50%) scale(1)", 200);
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((a, b) => a + b.qty, 0);
+            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('cart-total').innerText = total + ' DH';
+            document.getElementById('modal-total').innerText = total + ' DH';
+
+            const list = document.getElementById('cart-items');
+            list.innerHTML = cart.map((item, idx) => `
+                <div class="flex justify-between items-center bg-gray-800 p-2 rounded-lg">
+                    <div class="flex-1">
+                        <div class="text-sm font-bold">${item.name}</div>
+                        <div class="text-xs text-gray-400">${item.price} DH x ${item.qty}</div>
                     </div>
-                </div>`;
-            }).join('');
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeQty(${idx}, -1)" class="w-6 h-6 bg-red-500 rounded text-white text-xs">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty(${idx}, 1)" class="w-6 h-6 bg-green-500 rounded text-white text-xs">+</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // 5. منطق الـ Lightbox والـ Zoom
-        let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
-        const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img'), lbCont = document.getElementById('lb-container');
+        function changeQty(idx, delta) {
+            cart[idx].qty += delta;
+            if(cart[idx].qty <= 0) cart.splice(idx, 1);
+            updateCartUI();
+        }
 
+        function openCart() { document.getElementById('cart-modal').classList.add('active'); }
+        function closeCart() { document.getElementById('cart-modal').classList.remove('active'); }
+
+        // === 4. الحماية والطلب ===
+        function generateMath() {
+            const a = Math.floor(Math.random() * 5) + 1;
+            const b = Math.floor(Math.random() * 5) + 1;
+            mathAns = a + b;
+            document.getElementById('math-q').innerText = `${a} + ${b}`;
+        }
+
+        function getDeviceId() {
+            let id = localStorage.getItem('device_id');
+            if (!id) { id = Math.random().toString(36).substr(2, 9); localStorage.setItem('device_id', id); }
+            return id;
+        }
+
+        function submitOrder() {
+            if(cart.length === 0) return alert('السلة فارغة!');
+            
+            const tableVal = document.getElementById('table-input').value;
+            if(!tableVal) return alert('الرجاء إدخال رقم الطاولة');
+            
+            const mathVal = parseInt(document.getElementById('math-a').value);
+            if(mathVal !== mathAns) return alert('إجابة الرياضيات خاطئة 🤖');
+
+            // فحص الحماية (Cooldown)
+            const lastOrder = localStorage.getItem('last_order_time');
+            if(lastOrder && (Date.now() - lastOrder < 60000)) return alert('الرجاء الانتظار دقيقة قبل طلب جديد ⏳');
+
+            // إرسال الطلب
+            const btn = document.getElementById('send-btn');
+            btn.innerText = 'جارِ الإرسال...';
+            btn.disabled = true;
+
+            const orderData = {
+                table: tableVal,
+                items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
+                total: document.getElementById('modal-total').innerText,
+                deviceId: getDeviceId()
+            };
+
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // مهم جداً لـ Google Script
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            }).then(() => {
+                alert('✅ تم استلام طلبك بنجاح! شكراً لك.');
+                localStorage.setItem('last_order_time', Date.now());
+                cart = [];
+                updateCartUI();
+                closeCart();
+                btn.innerText = '✅ إرسال الطلب الآن';
+                btn.disabled = false;
+                generateMath(); // سؤال جديد
+            }).catch(() => alert('حدث خطأ في الاتصال'));
+        }
+
+        // === 5. Lightbox ===
         function openLightbox(src) {
-            lbImg.src = src; scale = 1; pointX = pointY = 0; updateTransform();
-            lb.classList.add('active');
+            document.getElementById('lb-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
         }
-        function closeLightbox() { lb.classList.remove('active'); }
-        lb.addEventListener('click', e => { if(e.target === lb) closeLightbox(); });
-
-        function zoomImage(delta) { scale = Math.max(1, Math.min(5, scale + delta)); updateTransform(); }
-        function resetZoom() { scale = 1; pointX = pointY = 0; updateTransform(); }
-        function updateTransform() { lbImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`; }
-
-        // عجلة الماوس
-        lbCont.addEventListener('wheel', e => { e.preventDefault(); zoomImage(e.deltaY > 0 ? -0.2 : 0.2); }, { passive: false });
-        
-        // السحب للتحريك
-        lbCont.addEventListener('mousedown', e => { panning = true; startX = e.clientX - pointX; startY = e.clientY - pointY; });
-        window.addEventListener('mouseup', () => panning = false);
-        window.addEventListener('mousemove', e => { if(!panning || scale === 1) return; pointX = e.clientX - startX; pointY = e.clientY - startY; updateTransform(); });
-
-        // دعم اللمس للموبايل
-        let touchStartDist = 0, touchStartScale = 1;
-        lbCont.addEventListener('touchstart', e => {
-            if(e.touches.length === 2) {
-                touchStartDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                touchStartScale = scale;
-            }
-        });
-        lbCont.addEventListener('touchmove', e => {
-            if(e.touches.length === 2) {
-                e.preventDefault();
-                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                scale = Math.max(1, Math.min(5, touchStartScale + (dist - touchStartDist) * 0.01));
-                updateTransform();
-            }
-        }, { passive: false });
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
 
         window.onload = init;
     </script>
