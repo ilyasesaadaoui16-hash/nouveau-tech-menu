@@ -103,10 +103,14 @@
                 
                 <!-- حماية وخصوصية -->
                 <div class="bg-gray-800 p-3 rounded-lg mb-4 text-xs text-gray-400 space-y-2">
-                    <label class="flex justify-between items-center">
-                        <span>🔒 رقم الطاولة</span>
-                        <input id="table-input" type="number" class="bg-gray-700 text-white w-16 text-center rounded px-2 py-1" placeholder="؟">
-                    </label>
+                    <!-- الجديد -->
+                    <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 mb-4 flex justify-between items-center">
+                        <span class="text-sm text-gray-400">📍 رقم الطاولة</span>
+                        <span id="table-display-cart" class="font-bold text-yellow-500 text-xl">-</span>
+                    </div>
+
+                    <!-- حقل مخفي يرسل الرقم للسكربت -->
+                    <input type="hidden" id="table-input" value="">
                     <label class="flex justify-between items-center">
                         <span>🤖 تحقق: كم ناتج <span id="math-q" class="text-yellow-500">2+3</span>؟</span>
                         <input id="math-a" type="number" class="bg-gray-700 text-white w-16 text-center rounded px-2 py-1" placeholder="؟">
@@ -138,10 +142,20 @@
         
         // قراءة رقم الطاولة من الرابط (?table=5)
         const urlParams = new URLSearchParams(window.location.search);
-        const tableNum = urlParams.get('table');
-        document.getElementById('table-display').innerText = tableNum || 'غير محدد';
-        if(tableNum) document.getElementById('table-input').value = tableNum;
+        let tableNum = urlParams.get('table');
 
+        // إذا لم يوجد رقم في الرابط، اطلبه من الزبون مرة واحدة فقط
+        if (!tableNum) {
+            tableNum = prompt('الرجاء إدخال رقم طاولتك:');
+            if (!tableNum || tableNum.trim() === '') {
+                alert('لا يمكن إرسال الطلب بدون رقم طاولة!');
+                tableNum = '0'; // قيمة افتراضية
+            }
+        }
+
+        // عرض رقم الطاولة في الهيدر وفي السلة
+        document.getElementById('table-display').innerText = tableNum;
+        document.getElementById('table-input').value = tableNum;
         // === 1. إخفاء شاشة الترحيب ===
         setTimeout(() => document.getElementById('splash').classList.add('splash-hide'), 2000);
 
@@ -239,7 +253,13 @@
             updateCartUI();
         }
 
-        function openCart() { document.getElementById('cart-modal').classList.add('active'); }
+        function openCart() {
+            // تحديث عرض رقم الطاولة في السلة
+            const tableNum = document.getElementById('table-input').value;
+            document.getElementById('table-display-cart').innerText = tableNum || 'غير محدد';
+            
+            document.getElementById('cart-modal').classList.add('active');
+        }
         function closeCart() { document.getElementById('cart-modal').classList.remove('active'); }
 
         // === 4. الحماية والطلب ===
