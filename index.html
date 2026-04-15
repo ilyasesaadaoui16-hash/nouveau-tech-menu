@@ -101,21 +101,14 @@
                     <span class="text-yellow-500" id="modal-total">0 DH</span>
                 </div>
                 
-                <!-- حماية وخصوصية -->
-                <div class="bg-gray-800 p-3 rounded-lg mb-4 text-xs text-gray-400 space-y-2">
-                    <!-- الجديد -->
-                    <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 mb-4 flex justify-between items-center">
-                        <span class="text-sm text-gray-400">📍 رقم الطاولة</span>
-                        <span id="table-display-cart" class="font-bold text-yellow-500 text-xl">-</span>
-                    </div>
-
-                    <!-- حقل مخفي يرسل الرقم للسكربت -->
-                    <input type="hidden" id="table-input" value="">
-                    <label class="flex justify-between items-center">
-                        <span>🤖 تحقق: كم ناتج <span id="math-q" class="text-yellow-500">2+3</span>؟</span>
-                        <input id="math-a" type="number" class="bg-gray-700 text-white w-16 text-center rounded px-2 py-1" placeholder="؟">
-                    </label>
+                <!-- عرض رقم الطاولة (للقراءة فقط) -->
+                <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 mb-4 flex justify-between items-center">
+                    <span class="text-sm text-gray-400">📍 رقم الطاولة</span>
+                    <span id="table-display-cart" class="font-bold text-yellow-500 text-xl">-</span>
                 </div>
+
+                <!-- حقل مخفي يحتوي على رقم الطاولة -->
+                <input type="hidden" id="table-input" value="">
 
                 <button onclick="submitOrder()" id="send-btn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition">
                     ✅ إرسال الطلب الآن
@@ -132,30 +125,30 @@
 
     <script>
         // === إعدادات هامة ===
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIWHuGH6ncA4zp6A43RdxyxM3yibzV65Lpq4hdgc6NhVv4yjZfRpNfUFJMRbr6cP56Ds7oD9lye1B3/pub?output=tsv'; 
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIslQEZ7sCeKobQlZX1cRL0qOXsjCr9VPBO1QHIdNb5gJ8MnARpP_cmZiwGVF82Lo-BQ/exec';
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/15RKTDEOJqXo2e7PF13UuQiLc2hajq8dRtP7eSJJNnZ8/edit?usp=sharing'; 
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_jYSgV_M1a24RuNyYBzYnaTtC_vWj7C4f4xAE_48vGn95_RJVIj6ySl1TiCM6851Mig/exec';
 
         // === متغيرات النظام ===
         let cart = [];
         let allItems = [];
-        let mathAns = 0;
         
         // قراءة رقم الطاولة من الرابط (?table=5)
         const urlParams = new URLSearchParams(window.location.search);
         let tableNum = urlParams.get('table');
 
-        // إذا لم يوجد رقم في الرابط، اطلبه من الزبون مرة واحدة فقط
+        // إذا لم يوجد رقم في الرابط، اطلبه من الزبون
         if (!tableNum) {
             tableNum = prompt('الرجاء إدخال رقم طاولتك:');
             if (!tableNum || tableNum.trim() === '') {
                 alert('لا يمكن إرسال الطلب بدون رقم طاولة!');
-                tableNum = '0'; // قيمة افتراضية
+                tableNum = '0';
             }
         }
 
-        // عرض رقم الطاولة في الهيدر وفي السلة
+        // عرض رقم الطاولة
         document.getElementById('table-display').innerText = tableNum;
         document.getElementById('table-input').value = tableNum;
+
         // === 1. إخفاء شاشة الترحيب ===
         setTimeout(() => document.getElementById('splash').classList.add('splash-hide'), 2000);
 
@@ -167,7 +160,6 @@
                     allItems = results.data.filter(i => i.name);
                     renderMenu('all');
                     renderCategories();
-                    generateMath();
                 }
             });
         }
@@ -260,16 +252,12 @@
             
             document.getElementById('cart-modal').classList.add('active');
         }
-        function closeCart() { document.getElementById('cart-modal').classList.remove('active'); }
-
-        // === 4. الحماية والطلب ===
-        function generateMath() {
-            const a = Math.floor(Math.random() * 5) + 1;
-            const b = Math.floor(Math.random() * 5) + 1;
-            mathAns = a + b;
-            document.getElementById('math-q').innerText = `${a} + ${b}`;
+        
+        function closeCart() { 
+            document.getElementById('cart-modal').classList.remove('active'); 
         }
 
+        // === 4. إرسال الطلب ===
         function getDeviceId() {
             let id = localStorage.getItem('device_id');
             if (!id) { id = Math.random().toString(36).substr(2, 9); localStorage.setItem('device_id', id); }
@@ -280,10 +268,7 @@
             if(cart.length === 0) return alert('السلة فارغة!');
             
             const tableVal = document.getElementById('table-input').value;
-            if(!tableVal) return alert('الرجاء إدخال رقم الطاولة');
-            
-            const mathVal = parseInt(document.getElementById('math-a').value);
-            if(mathVal !== mathAns) return alert('إجابة الرياضيات خاطئة 🤖');
+            if(!tableVal || tableVal === '0') return alert('رقم الطاولة غير صحيح!');
 
             // فحص الحماية (Cooldown)
             const lastOrder = localStorage.getItem('last_order_time');
@@ -303,7 +288,7 @@
 
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // مهم جداً لـ Google Script
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             }).then(() => {
@@ -314,7 +299,6 @@
                 closeCart();
                 btn.innerText = '✅ إرسال الطلب الآن';
                 btn.disabled = false;
-                generateMath(); // سؤال جديد
             }).catch(() => alert('حدث خطأ في الاتصال'));
         }
 
