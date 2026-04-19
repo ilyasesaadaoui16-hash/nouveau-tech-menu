@@ -109,7 +109,12 @@
 
                 <!-- حقل مخفي يحتوي على رقم الطاولة -->
                 <input type="hidden" id="table-input" value="">
-
+                <div class="bg-gray-800 p-3 rounded-lg mb-4">
+                    <label class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">👥 عدد الأشخاص (Couvert)</span>
+                        <input id="couvert-input" type="number" value="1" min="1" max="20" class="bg-gray-700 text-white w-16 text-center rounded px-2 py-1">
+                    </label>
+                </div>
                 <button onclick="submitOrder()" id="send-btn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition">
                     ✅ إرسال الطلب الآن
                 </button>
