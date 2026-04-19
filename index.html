@@ -297,9 +297,11 @@
                 items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
                 total: document.getElementById('modal-total').innerText,
                 deviceId: getDeviceId(),
-                couvert: document.getElementById('couvert-input').value
+                couvert: document.getElementById('couvert-input').value || 1 // ✅ مهم جداً
             };
-
+        
+            console.log('Sending couvert:', orderData.couvert); // للتأكد من القيمة
+           
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
