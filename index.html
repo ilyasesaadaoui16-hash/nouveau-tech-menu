@@ -288,7 +288,8 @@
                 table: tableVal,
                 items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
                 total: document.getElementById('modal-total').innerText,
-                deviceId: getDeviceId()
+                deviceId: getDeviceId(),
+                couvert: document.getElementById('couvert-input').value
             };
 
             fetch(APPS_SCRIPT_URL, {
