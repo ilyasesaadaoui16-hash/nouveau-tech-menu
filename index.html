@@ -286,16 +286,15 @@
             btn.disabled = true;
 
             const orderData = {
-            const orderData = {
                 table: tableVal,
-                // إرسال الأصناف مع الأسعار (صيغة جديدة)
+                // ✅ مهم جداً: إرسال السعر مع الصنف
                 items: cart.map(i => `${i.name} x${i.qty} @${i.price}`).join(', '),
                 total: document.getElementById('modal-total').innerText,
                 deviceId: getDeviceId(),
                 couvert: document.getElementById('couvert-input').value || 1
             };
-        
-            console.log('Sending couvert:', orderData.couvert); // للتأكد من القيمة
+            
+            console.log('Sending items:', orderData.items); // للتأكد
            
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
