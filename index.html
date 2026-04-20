@@ -192,24 +192,25 @@
             const grid = document.getElementById('menu-grid');
             
             grid.innerHTML = items.map((item, i) => {
-                // تنظيف البيانات من الأحرف الخاصة
-                const safeName = (item.name || '').replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                const safePrice = (item.price || '').replace(/[^0-9]/g, ''); // إزالة كل ما عدا الأرقام
-                const safeImage = (item.image || 'https://via.placeholder.com/300').replace(/'/g, "&apos;");
+                // ✅ الحل السحري: JSON.stringify يضيف علامات الاقتباس ويهرب الأحرف الخاصة تلقائياً
+                const safeName = JSON.stringify(item.name || '');
+                const safePrice = JSON.stringify(item.price || '0');
+                const safeImage = JSON.stringify(item.image || 'https://via.placeholder.com/300');
+                
                 const badge = i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع');
                 
                 return `
-                <div class="menu-card" onclick="openLightbox('${safeImage}')">
+                <div class="menu-card" onclick="openLightbox(${safeImage})">
                     <div class="relative">
-                        <img src="${safeImage}" class="w-full h-32 object-cover">
+                        <img src=${safeImage} class="w-full h-32 object-cover">
                         <span class="badge">${badge}</span>
                     </div>
                     <div class="p-3">
-                        <h3 class="font-bold text-sm mb-1">${safeName}</h3>
+                        <h3 class="font-bold text-sm mb-1">${item.name}</h3>
                         <p class="text-[10px] text-gray-400 line-clamp-2">${item.desc || ''}</p>
                         <div class="flex justify-between items-center mt-2">
                             <span class="text-yellow-500 font-bold text-sm">${item.price}</span>
-                            <button onclick="addToCart('${safeName}', '${safePrice}')" 
+                            <button onclick="addToCart(${safeName}, ${safePrice})" 
                                     class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400">
                                 +
                             </button>
@@ -219,13 +220,14 @@
                 `;
             }).join('');
         }
-
-        // === 3. منطق السلة ===
+            // === 3. منطق السلة ===
         function addToCart(name, price) {
-            const p = parseInt(price);
+            // تنظيف السعر من أي أحرف غير رقمية (مثل " DH")
+            const cleanPrice = String(price).replace(/[^0-9]/g, '');
+            const p = parseInt(cleanPrice);
             
             if(isNaN(p)) {
-                alert('السعر غير صحيح للمنتج: ' + name);
+                console.error('سعر غير صحيح:', price);
                 return;
             }
             
