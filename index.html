@@ -192,7 +192,7 @@
             const grid = document.getElementById('menu-grid');
             
             grid.innerHTML = items.map((item, i) => {
-                // ✅ الحل: استخدام بيانات آمنة بدون علامات اقتباس مزدوجة
+                // تنظيف البيانات للأمان
                 const safeName = (item.name || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
                 const safePrice = (item.price || '0').replace(/[^0-9]/g, '');
                 const safeImage = (item.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
@@ -200,9 +200,21 @@
                 const badge = i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع');
                 
                 return `
-                <div class="menu-card" onclick="openLightbox('${safeImage}')" style="cursor: pointer;">
+                <!-- ✅ البطاقة بدون onclick (لا تفتح الصورة تلقائياً) -->
+                <div class="menu-card" style="cursor: default;">
                     <div class="relative">
-                        <img src="${safeImage}" class="w-full h-32 object-cover">
+                        <!-- الصورة -->
+                        <img src="${safeImage}" 
+                             class="w-full h-32 object-cover cursor-zoom-in hover:opacity-90 transition"
+                             onclick="openLightbox('${safeImage}')"
+                             onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                        
+                        <!-- 🔴 أضف كود أيقونة التكبير هنا 🔴 -->
+                        <div class="absolute top-2 left-2 bg-black/50 rounded-full p-1.5 opacity-0 hover:opacity-100 transition">
+                            <span class="text-white text-xs">🔍</span>
+                        </div>
+                        
+                        <!-- شارة مميز/جديد -->
                         <span class="badge">${badge}</span>
                     </div>
                     <div class="p-3">
@@ -211,16 +223,14 @@
                         <div class="flex justify-between items-center mt-2">
                             <span class="text-yellow-500 font-bold text-sm">${item.price}</span>
                             
-                            <!-- ✅ زر الإضافة مع منع التداخل -->
+                            <!-- ✅ زر الإضافة يعمل بشكل مستقل -->
                             <button type="button" 
                                     onclick="addToCart('${safeName}', '${safePrice}'); return false;"
                                     onmousedown="event.stopPropagation(); event.preventDefault();"
-                                    onmouseup="event.stopPropagation(); event.preventDefault();"
-                                    class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400"
+                                    class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400 active:scale-95 transition"
                                     style="cursor: pointer; position: relative; z-index: 10;">
                                 +
                             </button>
-                            
                         </div>
                     </div>
                 </div>
