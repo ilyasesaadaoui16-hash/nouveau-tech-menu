@@ -192,7 +192,6 @@
             const grid = document.getElementById('menu-grid');
             
             grid.innerHTML = items.map((item, i) => {
-                // ✅ الحل السحري: JSON.stringify يضيف علامات الاقتباس ويهرب الأحرف الخاصة تلقائياً
                 const safeName = JSON.stringify(item.name || '');
                 const safePrice = JSON.stringify(item.price || '0');
                 const safeImage = JSON.stringify(item.image || 'https://via.placeholder.com/300');
@@ -200,7 +199,7 @@
                 const badge = i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع');
                 
                 return `
-                <div class="menu-card" onclick="openLightbox(${safeImage})">
+                <div class="menu-card" onclick="openLightbox(${safeImage})" style="cursor: pointer;">
                     <div class="relative">
                         <img src=${safeImage} class="w-full h-32 object-cover">
                         <span class="badge">${badge}</span>
@@ -210,10 +209,13 @@
                         <p class="text-[10px] text-gray-400 line-clamp-2">${item.desc || ''}</p>
                         <div class="flex justify-between items-center mt-2">
                             <span class="text-yellow-500 font-bold text-sm">${item.price}</span>
-                            <button onclick="addToCart(${safeName}, ${safePrice})" 
-                                    class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400">
+                            
+                            <button onclick="event.stopPropagation(); addToCart(${safeName}, ${safePrice}); return false;" 
+                                    class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400"
+                                    style="cursor: pointer;">
                                 +
                             </button>
+                            
                         </div>
                     </div>
                 </div>
@@ -222,7 +224,6 @@
         }
             // === 3. منطق السلة ===
         function addToCart(name, price) {
-            // تنظيف السعر من أي أحرف غير رقمية (مثل " DH")
             const cleanPrice = String(price).replace(/[^0-9]/g, '');
             const p = parseInt(cleanPrice);
             
