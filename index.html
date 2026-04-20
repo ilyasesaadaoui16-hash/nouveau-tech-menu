@@ -192,16 +192,17 @@
             const grid = document.getElementById('menu-grid');
             
             grid.innerHTML = items.map((item, i) => {
-                const safeName = JSON.stringify(item.name || '');
-                const safePrice = JSON.stringify(item.price || '0');
-                const safeImage = JSON.stringify(item.image || 'https://via.placeholder.com/300');
+                // ✅ الحل: استخدام بيانات آمنة بدون علامات اقتباس مزدوجة
+                const safeName = (item.name || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+                const safePrice = (item.price || '0').replace(/[^0-9]/g, '');
+                const safeImage = (item.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
                 
                 const badge = i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع');
                 
                 return `
-                <div class="menu-card" onclick="openLightbox(${safeImage})" style="cursor: pointer;">
+                <div class="menu-card" onclick="openLightbox('${safeImage}')" style="cursor: pointer;">
                     <div class="relative">
-                        <img src=${safeImage} class="w-full h-32 object-cover">
+                        <img src="${safeImage}" class="w-full h-32 object-cover">
                         <span class="badge">${badge}</span>
                     </div>
                     <div class="p-3">
@@ -210,9 +211,13 @@
                         <div class="flex justify-between items-center mt-2">
                             <span class="text-yellow-500 font-bold text-sm">${item.price}</span>
                             
-                            <button onclick="event.stopPropagation(); addToCart(${safeName}, ${safePrice}); return false;" 
+                            <!-- ✅ زر الإضافة مع منع التداخل -->
+                            <button type="button" 
+                                    onclick="addToCart('${safeName}', '${safePrice}'); return false;"
+                                    onmousedown="event.stopPropagation(); event.preventDefault();"
+                                    onmouseup="event.stopPropagation(); event.preventDefault();"
                                     class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400"
-                                    style="cursor: pointer;">
+                                    style="cursor: pointer; position: relative; z-index: 10;">
                                 +
                             </button>
                             
@@ -224,11 +229,12 @@
         }
             // === 3. منطق السلة ===
         function addToCart(name, price) {
+            // تنظيف السعر: إزالة أي أحرف غير رقمية
             const cleanPrice = String(price).replace(/[^0-9]/g, '');
             const p = parseInt(cleanPrice);
             
-            if(isNaN(p)) {
-                console.error('سعر غير صحيح:', price);
+            if(isNaN(p) || p <= 0) {
+                console.error('سعر غير صحيح:', price, 'للمنتج:', name);
                 return;
             }
             
