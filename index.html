@@ -190,18 +190,22 @@
         function renderMenu(cat) {
             const items = cat === 'all' ? allItems : allItems.filter(i => i.category === cat);
             const grid = document.getElementById('menu-grid');
+            
             grid.innerHTML = items.map((item, i) => `
                 <div class="menu-card" onclick="openLightbox('${item.image || 'https://via.placeholder.com/300'}')">
                     <div class="relative">
                         <img src="${item.image || 'https://via.placeholder.com/300'}" class="w-full h-32 object-cover">
-                        <span class="badge">🔥 ${i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع')}</span>
+                        <span class="badge">${i % 3 === 0 ? 'مميز' : (i % 3 === 1 ? 'جديد' : 'شائع')}</span>
                     </div>
                     <div class="p-3">
                         <h3 class="font-bold text-sm mb-1">${item.name}</h3>
                         <p class="text-[10px] text-gray-400 line-clamp-2">${item.desc || ''}</p>
                         <div class="flex justify-between items-center mt-2">
                             <span class="text-yellow-500 font-bold text-sm">${item.price}</span>
-                            <button onclick="event.stopPropagation(); addToCart('${item.name}', '${item.price}')" class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400">+</button>
+                            <button onclick="addToCart(event, '${item.name}', '${item.price}')" 
+                                    class="bg-yellow-500 text-black w-7 h-7 rounded-full flex items-center justify-center font-bold hover:bg-yellow-400">
+                                +
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -209,14 +213,25 @@
         }
 
         // === 3. منطق السلة ===
-        function addToCart(name, price) {
+        function addToCart(event, name, price) {
+            // منع فتح الصورة عند الضغط على زر الإضافة
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            
             const p = parseInt(price);
             const existing = cart.find(i => i.name === name);
-            if(existing) existing.qty++;
-            else cart.push({ name, price: p, qty: 1 });
+            
+            if(existing) {
+                existing.qty++;
+            } else {
+                cart.push({ name, price: p, qty: 1 });
+            }
+            
             updateCartUI();
             
-            // تأثير بصري بسيط
+            // تأثير بصري
             const fab = document.querySelector('.cart-fab');
             fab.style.transform = "translateX(-50%) scale(1.2)";
             setTimeout(() => fab.style.transform = "translateX(-50%) scale(1)", 200);
